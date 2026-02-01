@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: elecampaign
+      MYSQL_USER: campaign_user
+      MYSQL_PASSWORD: StrongPassword
+      MYSQL_ROOT_PASSWORD: rootpass
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  api:
+    build: .
+    container_name: campaign-api
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/elecampaign
+      DB_USER: campaign_user
+      DB_PASS: StrongPassword
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:
