@@ -11,7 +11,7 @@ services:
 
     environment:
       MYSQL_DATABASE: elecampaign
-      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_ROOT_PASSWORD: RAVIkumar@9866
 
     volumes:
       - mysql_data:/var/lib/mysql
