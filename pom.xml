@@ -41,10 +41,10 @@
         </dependency>
 
         <!-- WebClient (USED BY YOUR CODE) -->
-        <dependency>
+        <!-- <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>
+        </dependency> -->
 
         <!-- JPA -->
         <dependency>
