@@ -2,14 +2,19 @@ FROM eclipse-temurin:17-jdk
 
 WORKDIR /app
 
+# Copy full project
 COPY . .
 
-# 🔑 FIX: give execute permission
+# Make mvnw executable
 RUN chmod +x mvnw
 
-# build application
+# Build WAR
 RUN ./mvnw clean package -DskipTests
+
+# Copy WAR to a fixed name (NO wildcards at runtime)
+RUN cp target/*.war app.war
 
 EXPOSE 8080
 
-CMD ["java","-jar","target/*.war"]
+# Run using fixed filename
+CMD ["java", "-jar", "app.war"]
