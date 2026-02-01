@@ -21,21 +21,21 @@ public class VoterController {
     @Autowired
     private VoterService voterService;
 
-//    @PostMapping("/insertrecords")
-//    public ResponseEntity<APIResponse<Map<String, Object>>> saveData(
-//            @RequestBody VoterBulkRequest request) {
-//        List<Voter> saved = voterService.insertData(request);
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("total", request.getRecords().size());
-//        response.put("inserted", saved.size());
-//        response.put("skipped", request.getRecords().size() - saved.size());
-//        return ResponseEntity.status(HttpStatus.CREATED)
-//                .body(APIResponse.success(
-//                        201,
-//                        "Voter records processed successfully",
-//                        response
-//                ));
-//    }
+    @PostMapping("/insertrecords")
+    public ResponseEntity<APIResponse<Map<String, Object>>> saveData(
+            @RequestBody VoterBulkRequest request) {
+        List<Voter> saved = voterService.insertData(request);
+        Map<String, Object> response = new HashMap<>();
+        response.put("total", request.getRecords().size());
+        response.put("inserted", saved.size());
+        response.put("skipped", request.getRecords().size() - saved.size());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(APIResponse.success(
+                        201,
+                        "Voter records processed successfully",
+                        response
+                ));
+    }
 
 
     @GetMapping("/voters")

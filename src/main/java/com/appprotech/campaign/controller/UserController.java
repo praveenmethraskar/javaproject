@@ -23,17 +23,17 @@ public class UserController {
     @Autowired
     private  UserService userService;
 
-//    @PostMapping("/create")
-//    public ResponseEntity<APIResponse<UserResponse>> createUser(@Valid @RequestBody UserRequest request) {
-//        UserResponse user = userService.createUser(request);
-//        return ResponseEntity.status(HttpStatus.CREATED)
-//                .body(APIResponse.<UserResponse>builder()
-//                        .success(true)
-//                        .statusCode(201)
-//                        .message("User created successfully")
-//                        .data(user)
-//                        .build());
-//    }
+    @PostMapping("/create")
+    public ResponseEntity<APIResponse<UserResponse>> createUser(@Valid @RequestBody UserRequest request) {
+        UserResponse user = userService.createUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(APIResponse.<UserResponse>builder()
+                        .success(true)
+                        .statusCode(201)
+                        .message("User created successfully")
+                        .data(user)
+                        .build());
+    }
 
 //    @GetMapping("/getUser")
 //    public ResponseEntity<APIResponse<UserResponse>> getUser(HttpServletRequest requests) {

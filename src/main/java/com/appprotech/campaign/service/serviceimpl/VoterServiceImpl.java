@@ -207,34 +207,31 @@ public class VoterServiceImpl implements VoterService {
         UpdatedVoter updatedVoter;
 
         // =====================================================
-        // CASE 1: Existing update record + update required
+        // CASE 1: Existing update record + update required  (1,1)
         // =====================================================
         if (voterUpdateRequest.getUpdateId() != null && voterUpdateRequest.isUpdateRequired()) {
-
-            updatedVoter = updatedVoterRepository.findById(voterUpdateRequest.getUpdateId())
+             updatedVoter = updatedVoterRepository
+                    .findByEpicID(voterUpdateRequest.getEpicId())
                     .orElseThrow(() ->
                             new RuntimeException("Update record not found"));
-            updatedVoter=applyUpdateFields(updatedVoter, voterUpdateRequest);
+
+            updatedVoter= applyUpdateFields(updatedVoter, voterUpdateRequest);
             updatedVoter.setUpdatedBy(user.get());
             updatedVoter.setUpdatedDate(LocalDateTime.now());
-//            updatedVoter.setVotingPriority(mapToVotingPriority(voterUpdateRequest.getVotingPriorityRequest()));
-
-
-
         }
         // =====================================================
-        // CASE 2: No update record + update required
+        // CASE 2: No update record + update required****(0,1)
         // =====================================================
         else if (voterUpdateRequest.getUpdateId() == null && voterUpdateRequest.isUpdateRequired()) {
             updatedVoter = toUpdatedVoter(voter);
-            updatedVoter= applyUpdateFields(updatedVoter, voterUpdateRequest);
+//            updatedVoter= applyUpdateFields(updatedVoter, voterUpdateRequest);
             updatedVoter.setCreatedBy(user.get());
             updatedVoter.setCreatedDate(LocalDateTime.now());
 //            updatedVoter.setVotingPriority(mapToVotingPriority(voterUpdateRequest.getVotingPriorityRequest()));
 
         }
         // =====================================================
-        // CASE 3: No update record + no update required (copy only)
+        // CASE 3: No update record + no update required (copy only) ******New Record(0,0)
         // =====================================================
         else if (voterUpdateRequest.getUpdateId() == null && !voterUpdateRequest.isUpdateRequired()) {
             updatedVoter = toUpdatedVoter(voter);
