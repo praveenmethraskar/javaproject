@@ -37,7 +37,7 @@ services:
       # Spring Boot datasource (CRITICAL FIX)
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/elecampaign?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: rootpass
+      SPRING_DATASOURCE_PASSWORD: RAVIkumar@9866
 
       # Hibernate config
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
