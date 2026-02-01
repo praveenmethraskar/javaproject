@@ -6,7 +6,7 @@ services:
     container_name: mysql-db
     restart: always
 
-    # 🔑 Fix MySQL 8 authentication issue
+    # Fix MySQL 8 authentication issue
     command: --default-authentication-plugin=mysql_native_password
 
     environment:
@@ -34,10 +34,17 @@ services:
       - "8080:8080"
 
     environment:
-      # 🔑 Correct JDBC URL for Docker networking
-      DB_URL: jdbc:mysql://mysql:3306/elecampaign?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      DB_USER: root
-      DB_PASS: rootpass
+      # Spring Boot datasource (CRITICAL FIX)
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/elecampaign?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
+
+      # Hibernate config
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+
+      # Server
+      SERVER_PORT: 8080
 
     depends_on:
       mysql:
