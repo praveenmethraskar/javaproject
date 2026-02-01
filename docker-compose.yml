@@ -1,28 +1,47 @@
+version: "3.9"
+
 services:
   mysql:
     image: mysql:8.0
     container_name: mysql-db
     restart: always
+
+    # 🔑 Fix MySQL 8 authentication issue
+    command: --default-authentication-plugin=mysql_native_password
+
     environment:
       MYSQL_DATABASE: elecampaign
       MYSQL_ROOT_PASSWORD: rootpass
+
     volumes:
       - mysql_data:/var/lib/mysql
+
     ports:
       - "3306:3306"
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   api:
     build: .
     container_name: campaign-api
     restart: always
+
     ports:
       - "8080:8080"
+
     environment:
-      DB_URL: jdbc:mysql://mysql:3306/elecampaign
+      # 🔑 Correct JDBC URL for Docker networking
+      DB_URL: jdbc:mysql://mysql:3306/elecampaign?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       DB_USER: root
       DB_PASS: rootpass
+
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
 
 volumes:
   mysql_data:
