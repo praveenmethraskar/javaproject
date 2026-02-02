@@ -14,6 +14,8 @@ public interface VoterService {
 
     List<VoterResponse> getAllVoters(HttpServletRequest request);
 
+    public List<VoterResponse> getAllVotersbyboothNumber(Long boothNumber,HttpServletRequest request);
+
     public VoterResponse getVoterByEpicId(String epicId, HttpServletRequest request);
 
     ResponseEntity<APIResponse<VoterUpdateResponse>> updateVoter(VoterUpdateRequest voterUpdateRequest, HttpServletRequest request);

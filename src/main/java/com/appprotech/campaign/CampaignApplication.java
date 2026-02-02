@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 import java.util.List;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,12 +16,9 @@ import java.util.List;
 
 @SpringBootApplication
 @CrossOrigin
-public class CampaignApplication extends SpringBootServletInitializer{
+public class CampaignApplication {
 
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(CampaignApplication.class);
-    }
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(CampaignApplication.class, args);

@@ -38,7 +38,7 @@ public class VoterServiceImpl implements VoterService {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private UserServiceImpl  userServiceImpl;
+    private UserServiceImpl userServiceImpl;
 
     @Autowired
     private UpdatedVoterRepository updatedVoterRepository;
@@ -54,74 +54,60 @@ public class VoterServiceImpl implements VoterService {
         CommonVoterData common = request.getCommon();
         List<OriginalDataRequest> records = request.getRecords();
 
-        Set<String> incomingEpicIds = records.stream()
-                .map(OriginalDataRequest::getVoter_id)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+        Set<String> incomingEpicIds = records.stream().map(OriginalDataRequest::getVoter_id).filter(Objects::nonNull).collect(Collectors.toSet());
 
         Set<String> existingEpicIds = voterRepository.findExistingEpicIds(incomingEpicIds);
 
-        List<Voter> voters = records.stream()
-                .filter(data -> !existingEpicIds.contains(data.getVoter_id()))
-                .map(data -> {
-                    Voter voter = new Voter();
-                    // record-specific fields
-                    voter.setEpicId(data.getVoter_id());
-                    voter.setExtractId(data.getSl_no());
-                    voter.setName(data.getName());
-                    voter.setAge(data.getAge());
-                    voter.setGender(data.getGender());
-                    voter.setHouseNumber(data.getHouse_number());
-                    voter.setRelativeName(data.getRelation_name());
-                    voter.setRelativeRelation(data.getRelation_type());
-                    voter.setCreatedDate(new Date());
+        List<Voter> voters = records.stream().filter(data -> !existingEpicIds.contains(data.getVoter_id())).map(data -> {
+            Voter voter = new Voter();
+            // record-specific fields
+            voter.setEpicId(data.getVoter_id());
+            voter.setExtractId(data.getSl_no());
+            voter.setName(data.getName());
+            voter.setAge(data.getAge());
+            voter.setGender(data.getGender());
+            voter.setHouseNumber(data.getHouse_number());
+            voter.setRelativeName(data.getRelation_name());
+            voter.setRelativeRelation(data.getRelation_type());
+            voter.setCreatedDate(new Date());
 
-                    // common fields
-                    voter.setVillageOrMaintown(common.getVillageOrMaintown());
-                    voter.setMandal(common.getMandal());
-                    voter.setRevenueDivision(common.getRevenueDivision());
-                    voter.setDistrict(common.getDistrict());
-                    voter.setState(common.getState());
-                    voter.setPoliceStation(common.getPoliceStation());
-                    voter.setPostOffice(common.getPostOffice());
-                    voter.setAssemblyConstituency(common.getAssemblyConstituency());
-                    voter.setParliamentary(common.getParliamentary());
-                    voter.setBoothNumber(common.getBoothNumber());
-                    voter.setPollingStation(common.getPollingStation());
-                    voter.setNoAndNameOfSectionsInThePart(common.getNoAndNameOfSectionsInThePart());
-                    voter.setAddressOfPollingStation(common.getAddressOfPollingStation());
-                    voter.setPincode(common.getPincode()    );
-                    return voter;
-                })
-                .collect(Collectors.toList());
+            // common fields
+            voter.setVillageOrMaintown(common.getVillageOrMaintown());
+            voter.setMandal(common.getMandal());
+            voter.setRevenueDivision(common.getRevenueDivision());
+            voter.setDistrict(common.getDistrict());
+            voter.setState(common.getState());
+            voter.setPoliceStation(common.getPoliceStation());
+            voter.setPostOffice(common.getPostOffice());
+            voter.setAssemblyConstituency(common.getAssemblyConstituency());
+            voter.setParliamentary(common.getParliamentary());
+            voter.setBoothNumber(common.getBoothNumber());
+            voter.setPollingStation(common.getPollingStation());
+            voter.setNoAndNameOfSectionsInThePart(common.getNoAndNameOfSectionsInThePart());
+            voter.setAddressOfPollingStation(common.getAddressOfPollingStation());
+            voter.setPincode(common.getPincode());
+            return voter;
+        }).collect(Collectors.toList());
         return voterRepository.saveAll(voters);
     }
 
-        @Override
-        public List<VoterResponse> getAllVoters(HttpServletRequest request) {
-            long userId = jwtUtil.getUserId(jwtUtil.getToken(request));
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-    //            List<UserBoothAccess> assignedBooths = user.getAssignedBoothNumbers();
-            List<UserBoothAccess> assignedBooths=   userServiceImpl.getAssignedBooths(userId);
-             if (assignedBooths == null || assignedBooths.isEmpty()) {
-                throw new RuntimeException("User does not have any booth access");
-            }
-            List<Long> boothNumbers = assignedBooths.stream()
-                    .map(UserBoothAccess::getBoothNumber)
-                    .collect(Collectors.toList());
-
-             List<Voter> fetchedUsers=voterRepository.findAllVoters(boothNumbers);
-
-            List<VoterResponse> responses = Optional
-                    .ofNullable(voterRepository.findAllVoters(boothNumbers))
-                    .orElse(Collections.emptyList())
-                    .stream()
-                    .map(this::mapToVoterResponse)
-                    .toList();
-
-            return responses;
+    @Override
+    public List<VoterResponse> getAllVoters(HttpServletRequest request) {
+        long userId = jwtUtil.getUserId(jwtUtil.getToken(request));
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        //            List<UserBoothAccess> assignedBooths = user.getAssignedBoothNumbers();
+        List<UserBoothAccess> assignedBooths = userServiceImpl.getAssignedBooths(userId);
+        if (assignedBooths == null || assignedBooths.isEmpty()) {
+            throw new RuntimeException("User does not have any booth access");
         }
+        List<Long> boothNumbers = assignedBooths.stream().map(UserBoothAccess::getBoothNumber).collect(Collectors.toList());
+
+        List<Voter> fetchedUsers = voterRepository.findAllVoters(boothNumbers);
+
+        List<VoterResponse> responses = Optional.ofNullable(voterRepository.findAllVoters(boothNumbers)).orElse(Collections.emptyList()).stream().map(this::mapToVoterResponse).toList();
+
+        return responses;
+    }
 
 
     //    @Override
@@ -140,7 +126,7 @@ public class VoterServiceImpl implements VoterService {
 
     @Override
     public VoterResponse getVoterByEpicId(String epicId, HttpServletRequest request) {
-        Voter voter=findVoter(epicId,request);
+        Voter voter = findVoter(epicId, request);
         return mapToVoterResponse(voter);
     }
 
@@ -192,17 +178,13 @@ public class VoterServiceImpl implements VoterService {
 
     @Override
     @Transactional
-    public ResponseEntity<APIResponse<VoterUpdateResponse>> updateVoter(
-            VoterUpdateRequest voterUpdateRequest,
-            HttpServletRequest request) {
+    public ResponseEntity<APIResponse<VoterUpdateResponse>> updateVoter(VoterUpdateRequest voterUpdateRequest, HttpServletRequest request) {
 
-        Long userId=jwtUtil.getUserId(jwtUtil.getToken(request));
-     Optional<User>  user=  userRepository.findById(userId);
+        Long userId = jwtUtil.getUserId(jwtUtil.getToken(request));
+        Optional<User> user = userRepository.findById(userId);
 
         // 🔹 Fetch original voter once
-        Voter voter = voterRepository.findByEpicId(voterUpdateRequest.getEpicId())
-                .orElseThrow(() ->
-                        new RuntimeException("Voter not found with EPIC ID: " + voterUpdateRequest.getEpicId()));
+        Voter voter = voterRepository.findByEpicId(voterUpdateRequest.getEpicId()).orElseThrow(() -> new RuntimeException("Voter not found with EPIC ID: " + voterUpdateRequest.getEpicId()));
 
         UpdatedVoter updatedVoter;
 
@@ -210,12 +192,9 @@ public class VoterServiceImpl implements VoterService {
         // CASE 1: Existing update record + update required  (1,1)
         // =====================================================
         if (voterUpdateRequest.getUpdateId() != null && voterUpdateRequest.isUpdateRequired()) {
-             updatedVoter = updatedVoterRepository
-                    .findByEpicID(voterUpdateRequest.getEpicId())
-                    .orElseThrow(() ->
-                            new RuntimeException("Update record not found"));
+            updatedVoter = updatedVoterRepository.findByEpicID(voterUpdateRequest.getEpicId()).orElseThrow(() -> new RuntimeException("Update record not found"));
 
-            updatedVoter= applyUpdateFields(updatedVoter, voterUpdateRequest);
+            updatedVoter = applyUpdateFields(updatedVoter, voterUpdateRequest);
             updatedVoter.setUpdatedBy(user.get());
             updatedVoter.setUpdatedDate(LocalDateTime.now());
         }
@@ -239,7 +218,7 @@ public class VoterServiceImpl implements VoterService {
             updatedVoter.setCreatedBy(user.get());
             updatedVoter.setCreatedDate(LocalDateTime.now());
 //            updatedVoter.setVotingPriority(mapToVotingPriority(voterUpdateRequest.getVotingPriorityRequest()));
-            }
+        }
         // =====================================================
         else {
             throw new RuntimeException("Invalid update request state");
@@ -255,8 +234,7 @@ public class VoterServiceImpl implements VoterService {
 
         if (voterUpdateRequest.getVotingPriorityRequest() != null) {
 
-            VotingPriority votingPriority =
-                    mapToVotingPriority(voterUpdateRequest.getVotingPriorityRequest());
+            VotingPriority votingPriority = mapToVotingPriority(voterUpdateRequest.getVotingPriorityRequest());
 
             // ✅ IMPORTANT: set both sides
             votingPriority.setUpdatedVoter(updatedVoter);
@@ -268,46 +246,31 @@ public class VoterServiceImpl implements VoterService {
 
         VoterUpdateResponse response = toVoterUpdateResponse(saved);
 
-        return ResponseEntity.ok(
-                APIResponse.success(
-                        200,
-                        "Voter updated and  fetched successfully",
-                        response)
-        );
+        return ResponseEntity.ok(APIResponse.success(200, "Voter updated and  fetched successfully", response));
     }
 
 
+    private UpdatedVoter applyUpdateFields(UpdatedVoter updatedVoter, VoterUpdateRequest request) {
 
-    private UpdatedVoter applyUpdateFields(UpdatedVoter updatedVoter,
-                                   VoterUpdateRequest request) {
+        if (request.getName() != null) updatedVoter.setName(request.getName());
 
-        if (request.getName() != null)
-            updatedVoter.setName(request.getName());
+        if (request.getRelativeName() != null) updatedVoter.setRelativeName(request.getRelativeName());
 
-        if (request.getRelativeName() != null)
-            updatedVoter.setRelativeName(request.getRelativeName());
+        if (request.getRelativeRelation() != null) updatedVoter.setRelativeRelation(request.getRelativeRelation());
 
-        if (request.getRelativeRelation() != null)
-            updatedVoter.setRelativeRelation(request.getRelativeRelation());
+        if (request.getHouseNumber() != null) updatedVoter.setHouseNumber(request.getHouseNumber());
 
-        if (request.getHouseNumber() != null)
-            updatedVoter.setHouseNumber(request.getHouseNumber());
+        if (request.getGender() != null) updatedVoter.setGender(request.getGender());
 
-        if (request.getGender() != null)
-            updatedVoter.setGender(request.getGender());
+        if (request.getAge() != null) updatedVoter.setAge(request.getAge());
 
-        if (request.getAge() != null)
-            updatedVoter.setAge(request.getAge());
-
-        if (request.getPhoneNumber() != null)
-            updatedVoter.setPhoneNumber(request.getPhoneNumber());
+        if (request.getPhoneNumber() != null) updatedVoter.setPhoneNumber(request.getPhoneNumber());
         return updatedVoter;
     }
 
 
-
-    private VotingPriority mapToVotingPriority(VotingPriorityRequest votingPriorityRequest){
-        VotingPriority votingPriority=new VotingPriority();
+    private VotingPriority mapToVotingPriority(VotingPriorityRequest votingPriorityRequest) {
+        VotingPriority votingPriority = new VotingPriority();
         votingPriority.setFirstPriority(getParty(votingPriorityRequest.getFirstPriorityPartyId()));
         votingPriority.setSecondPriority(getParty(votingPriorityRequest.getSecondPriorityPartyId()));
         votingPriority.setThirdPriority(getParty(votingPriorityRequest.getThirdPriorityPartyId()));
@@ -320,35 +283,30 @@ public class VoterServiceImpl implements VoterService {
         return id == null ? null : partyRepository.getReferenceById(id);
     }
 
-    private Voter findVoter(String epicId, HttpServletRequest request){
+    private Voter findVoter(String epicId, HttpServletRequest request) {
 
         // 1️⃣ Get logged-in userId from JWT
         Long userId = jwtUtil.getUserId(jwtUtil.getToken(request));
 
         // 2️⃣ Fetch voter first
-        Voter voter = voterRepository.findByEpicId(epicId)
-                .orElseThrow(() ->
-                        new RuntimeException("Voter not found with EPIC ID: " + epicId));
+        Voter voter = voterRepository.findByEpicId(epicId).orElseThrow(() -> new RuntimeException("Voter not found with EPIC ID: " + epicId));
 
         // 3️⃣ Fetch user's booth access (only numbers)
-        List<Long> userBoothNumbers =
-                userBoothAccesseRepository.accessBoothNumbeByUserId(userId);
+        List<Long> userBoothNumbers = userBoothAccesseRepository.accessBoothNumbeByUserId(userId);
 
         if (userBoothNumbers == null || userBoothNumbers.isEmpty()) {
             throw new AccessDeniedException("User does not have any booth access");
         }
         // 4️⃣ Check booth authorization
         if (!userBoothNumbers.contains(voter.getBoothNumber())) {
-            throw new AccessDeniedException(
-                    "No access to booth: " + voter.getBoothNumber()
-            );
+            throw new AccessDeniedException("No access to booth: " + voter.getBoothNumber());
         }
         // 5️⃣ Authorized
         return voter;
     }
 
 
-    private VoterResponse mapToVoterResponse(Voter voter){
+    private VoterResponse mapToVoterResponse(Voter voter) {
         VoterResponse response = new VoterResponse();
         response.setId(voter.getId());
         response.setName(voter.getName());
@@ -372,14 +330,9 @@ public class VoterServiceImpl implements VoterService {
     }
 
     public VotingPriorityResponse mapToResponse(VotingPriority vp) {
-        return VotingPriorityResponse.builder()
-                .id(vp.getId())
+        return VotingPriorityResponse.builder().id(vp.getId())
 //                .userId(vp.getUser().getId())
-                .firstPriority(mapParty(vp.getFirstPriority()))
-                .secondPriority(mapParty(vp.getSecondPriority()))
-                .thirdPriority(mapParty(vp.getThirdPriority()))
-                .fourthPriority(mapParty(vp.getFourthPriority()))
-                .fifthPriority(mapParty(vp.getFifthPriority()))
+                .firstPriority(mapParty(vp.getFirstPriority())).secondPriority(mapParty(vp.getSecondPriority())).thirdPriority(mapParty(vp.getThirdPriority())).fourthPriority(mapParty(vp.getFourthPriority())).fifthPriority(mapParty(vp.getFifthPriority()))
 //                .createdDate(vp.getCreatedDate())
 //                .updatedDate(vp.getUpdatedDate())
                 .build();
@@ -388,12 +341,7 @@ public class VoterServiceImpl implements VoterService {
     private PartyResponse mapParty(Party party) {
         if (party == null) return null;
 
-        return PartyResponse.builder()
-                .id(party.getId())
-                .partyName(party.getPartyName())
-                .contestedName(party.getContestedName())
-                .partyPresident(party.getPartyPresident())
-                .build();
+        return PartyResponse.builder().id(party.getId()).partyName(party.getPartyName()).contestedName(party.getContestedName()).partyPresident(party.getPartyPresident()).build();
     }
 
     public UpdatedVoter toUpdatedVoter(Voter voter) {
@@ -424,15 +372,10 @@ public class VoterServiceImpl implements VoterService {
         updated.setBoothNumber(voter.getBoothNumber());
         updated.setPollingStation(voter.getPollingStation());
         // Metadata
-        updated.setNoAndNameOfSectionsInThePart(
-                voter.getNoAndNameOfSectionsInThePart()
-        );
-        updated.setAddressOfPollingStation(
-                voter.getAddressOfPollingStation()
-        );
+        updated.setNoAndNameOfSectionsInThePart(voter.getNoAndNameOfSectionsInThePart());
+        updated.setAddressOfPollingStation(voter.getAddressOfPollingStation());
         return updated;
     }
-
 
 
     public Voter toVoter(UpdatedVoter updated) {
@@ -465,12 +408,8 @@ public class VoterServiceImpl implements VoterService {
         voter.setParliamentary(updated.getParliamentary());
         voter.setBoothNumber(updated.getBoothNumber());
         voter.setPollingStation(updated.getPollingStation());
-        voter.setNoAndNameOfSectionsInThePart(
-                updated.getNoAndNameOfSectionsInThePart()
-        );
-        voter.setAddressOfPollingStation(
-                updated.getAddressOfPollingStation()
-        );
+        voter.setNoAndNameOfSectionsInThePart(updated.getNoAndNameOfSectionsInThePart());
+        voter.setAddressOfPollingStation(updated.getAddressOfPollingStation());
 
         return voter;
     }
@@ -498,10 +437,27 @@ public class VoterServiceImpl implements VoterService {
         response.setParliamentary(updatedVoter.getParliamentary());
         response.setBoothNumber(updatedVoter.getBoothNumber());
         response.setPollingStation(updatedVoter.getPollingStation());
-        response.setVotingPriorityResponse(
-                mapToResponse(updatedVoter.getVotingPriority())
-        );
+        response.setVotingPriorityResponse(mapToResponse(updatedVoter.getVotingPriority()));
         return response;
+    }
+
+
+    @Override
+    public List<VoterResponse> getAllVotersbyboothNumber(Long boothNumber, HttpServletRequest request) {
+        long userId = jwtUtil.getUserId(jwtUtil.getToken(request));
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        List<UserBoothAccess> assignedBooths = userServiceImpl.getAssignedBooths(userId);
+        if (assignedBooths == null || assignedBooths.isEmpty()) {
+            throw new RuntimeException("User does not have any booth access");
+        }
+        List<Long> boothNumbers = assignedBooths.stream().map(UserBoothAccess::getBoothNumber).collect(Collectors.toList());
+        boolean hasAccess = assignedBooths.stream().map(UserBoothAccess::getBoothNumber).anyMatch(boothNumber::equals);
+        if (hasAccess) {
+            List<Voter> fetchedUsers = voterRepository.findAllVotersbyboothNumber(boothNumber);
+            return Optional.ofNullable(fetchedUsers).orElse(Collections.emptyList()).stream().map(this::mapToVoterResponse).toList();
+        } else {
+            throw new RuntimeException("No access for requested booth number");
+        }
     }
 
 

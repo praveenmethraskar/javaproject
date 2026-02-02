@@ -24,6 +24,9 @@ public class OtpUtil {
     @Autowired
     private OtpService otpService;
 
+    @Autowired
+    private Msg91OtpService msg91OtpService;
+
     public String generateOtp() {
         return String.valueOf(100000 + new Random().nextInt(900000));
     }
@@ -60,7 +63,8 @@ public class OtpUtil {
                 .createdAt(LocalDateTime.now())
                 .build();
         otpRepository.save(entity);
-        otpService.sendOtp(user.getPhoneNumber(), otp);
+//        otpService.sendOtp(user.getPhoneNumber(), otp);
+        msg91OtpService.sendLoginOtp(user.getPhoneNumber(),otp);
     }
 
 

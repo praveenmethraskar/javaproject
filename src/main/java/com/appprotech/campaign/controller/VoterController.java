@@ -71,6 +71,19 @@ public class VoterController {
     }
 
 
+    @GetMapping("/votersbybooths")
+    public ResponseEntity<APIResponse<List<VoterResponse>>> getAllVotersbyboothnumber(@PathVariable Long boothnumber, HttpServletRequest request) {
+        List<VoterResponse> voters = voterService.getAllVotersbyboothNumber(boothnumber,request);
+        return ResponseEntity.ok(
+                APIResponse.success(
+                        200,
+                        "Voters fetched successfully",
+                        voters
+                )
+        );
+    }
+
+
 
 
 

@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Repository
-public interface VoterRepository extends JpaRepository<Voter,Long> {
+public interface VoterRepository extends JpaRepository<Voter, Long> {
 
     @Query("SELECT v.epicId FROM Voter v WHERE v.epicId IN :epicIds")
     Set<String> findExistingEpicIds(@Param("epicIds") Set<String> epicIds);
@@ -19,13 +19,12 @@ public interface VoterRepository extends JpaRepository<Voter,Long> {
     Optional<Voter> findByEpicId(String epicId);
 
 
-    @Query(
-            value = "SELECT * FROM voter_table WHERE booth_number IN (:boothNumbers)",
-            nativeQuery = true
-    )
+    @Query(value = "SELECT * FROM voter_table WHERE booth_number IN (:boothNumbers)", nativeQuery = true)
     List<Voter> findAllVoters(@Param("boothNumbers") List<Long> boothNumbers);
 
 
+    @Query(value = "SELECT * FROM voter_table WHERE booth_number=:boothNumbers", nativeQuery = true)
+    List<Voter> findAllVotersbyboothNumber(@Param("boothNumbers") Long boothNumbers);
 
 
 }

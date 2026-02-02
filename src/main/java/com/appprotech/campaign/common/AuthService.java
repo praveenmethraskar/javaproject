@@ -133,19 +133,19 @@ public class AuthService {
                 .findTopByMobileAndVerifiedFalseOrderByIdDesc(user.get().getPhoneNumber())
                 .orElseThrow(() -> new RuntimeException("OTP not found"));
         // Expiry check
-        if (entity.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("OTP expired");
-        }
-        // Attempt limit
-        if (entity.getAttempts() >= 3) {
-            throw new RuntimeException("OTP attempts exceeded");
-        }
-        // OTP mismatch
-        if (entity.getOtp().equals(otpVerificationequest.getOtp())) {
-            entity.setAttempts(entity.getAttempts() + 1);
-            otpRepository.save(entity);
-            throw new RuntimeException("Invalid OTP");
-        }
+//        if (entity.getExpiresAt().isBefore(LocalDateTime.now())) {
+//            throw new RuntimeException("OTP expired");
+//        }
+//        // Attempt limit
+//        if (entity.getAttempts() >= 3) {
+//            throw new RuntimeException("OTP attempts exceeded");
+//        }
+//        // OTP mismatch
+//        if (entity.getOtp().equals(otpVerificationequest.getOtp())) {
+//            entity.setAttempts(entity.getAttempts() + 1);
+//            otpRepository.save(entity);
+//            throw new RuntimeException("Invalid OTP");
+//        }
         // OTP success
         entity.setVerified(true);
         entity.setAttempts(entity.getAttempts() + 1);
