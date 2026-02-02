@@ -4,7 +4,7 @@ import com.appprotech.campaign.dto.LoginRequest;
 import com.appprotech.campaign.entity.OtpVerification;
 import com.appprotech.campaign.entity.User;
 import com.appprotech.campaign.repository.OtpRepository;
-import com.appprotech.campaign.service.OtpService;
+//import com.appprotech.campaign.service.OtpService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,9 +20,9 @@ public class OtpUtil {
 
     @Autowired
     private OtpRepository otpRepository;
-
-    @Autowired
-    private OtpService otpService;
+//
+//    @Autowired
+//    private OtpService otpService;
 
     @Autowired
     private Msg91OtpService msg91OtpService;
