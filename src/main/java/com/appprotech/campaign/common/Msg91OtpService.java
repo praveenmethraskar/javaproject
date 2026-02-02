@@ -12,7 +12,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.Map;
 
-@Service
 @Slf4j
 public class Msg91OtpService {
 
