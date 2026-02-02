@@ -16,9 +16,12 @@ import java.util.List;
 
 @SpringBootApplication
 @CrossOrigin
-public class CampaignApplication {
+public class CampaignApplication extends SpringBootServletInitializer{
 
-
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(CampaignApplication.class);
+    }
 
 	public static void main(String[] args) {
 		SpringApplication.run(CampaignApplication.class, args);
