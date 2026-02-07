@@ -1,64 +1,10 @@
 version: "3.9"
 
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: mysql-db
-    restart: always
-
-    # Fix MySQL 8 authentication issue
-    command: --default-authentication-plugin=mysql_native_password
-
-    environment:
-      MYSQL_DATABASE: elecampaign
-      MYSQL_ROOT_PASSWORD: RAVIkumar@9866
-
-    volumes:
-      - mysql_data:/var/lib/mysql
-
-    ports:
-      - "3306:3306"
-
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  api:
-    build: .
-    container_name: campaign-api
-    restart: always
-
-    ports:
-      - "8081:8080"
-
-    environment:
-      # Spring Boot datasource (CRITICAL FIX)
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/elecampaign?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root@123
-
-      # Hibernate config
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_SHOW_SQL: "true"
-
-      # Server
-      SERVER_PORT: 8080
-
-    depends_on:
-      mysql:
-        condition: service_healthy
-
-volumes:
-  mysql_data:version: "3.9"
-
-services:
   mysql-db:
     image: mysql:8.0
     container_name: mysql-db
     restart: always
-
     command: --default-authentication-plugin=mysql_native_password
 
     environment:
@@ -77,8 +23,8 @@ services:
       timeout: 5s
       retries: 5
 
-  api:
-    build: .
+  campaign-api:
+    image: java-app:latest     # THIS IS IMPORTANT
     container_name: campaign-api
     restart: always
 
@@ -92,7 +38,7 @@ services:
 
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_SHOW_SQL: "true"
-
+      SPRING_MAIN_LAZY_INITIALIZATION: "true"
       SERVER_PORT: 8080
 
     depends_on:
