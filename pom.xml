@@ -93,7 +93,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- 🔥 AWS SNS (FIX FOR YOUR ERROR) -->
+        <!-- AWS SNS (FIX FOR YOUR ERROR) -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>sns</artifactId>
