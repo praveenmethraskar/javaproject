@@ -35,7 +35,7 @@ services:
 
     environment:
       # Spring Boot datasource (CRITICAL FIX)
-      SPRING_DATASOURCE_URL: jdbc:mysql://3.108.66.203:3306/elecampaign?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/elecampaign?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root@123
 
