@@ -23,8 +23,8 @@ public class VoterController {
 
     @PostMapping("/insertrecords")
     public ResponseEntity<APIResponse<Map<String, Object>>> saveData(
-            @RequestBody VoterBulkRequest request) {
-        List<Voter> saved = voterService.insertData(request);
+            @RequestBody VoterBulkRequest request,HttpServletRequest httprequest) {
+        List<Voter> saved = voterService.insertData(request,httprequest);
         Map<String, Object> response = new HashMap<>();
         response.put("total", request.getRecords().size());
         response.put("inserted", saved.size());
@@ -71,9 +71,15 @@ public class VoterController {
     }
 
 
-    @GetMapping("/votersbybooths")
-    public ResponseEntity<APIResponse<List<VoterResponse>>> getAllVotersbyboothnumber(@PathVariable Long boothnumber, HttpServletRequest request) {
-        List<VoterResponse> voters = voterService.getAllVotersbyboothNumber(boothnumber,request);
+    @GetMapping("/votersbybooths/{boothnumber}")
+    public ResponseEntity<APIResponse<List<VoterResponse>>>
+    getAllVotersbyboothnumber(
+            @PathVariable Long boothnumber,
+            HttpServletRequest request) {
+
+        List<VoterResponse> voters =
+                voterService.getAllVotersbyboothNumber(boothnumber, request);
+
         return ResponseEntity.ok(
                 APIResponse.success(
                         200,
@@ -82,6 +88,7 @@ public class VoterController {
                 )
         );
     }
+
 
 
 

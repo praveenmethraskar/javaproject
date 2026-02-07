@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -46,74 +47,25 @@ public class UserServiceImpl implements UserService {
     private JwtUtil jwtUtil;
 
 
-//    @Override
-    @Transactional
-    public UserResponse createUsers(UserRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
-        }
-        User user = User.builder()
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .phoneNumber(request.getPhoneNumber())
-                .email(request.getEmail())
-                .referredPerson(request.getReferredPerson())
-//                .assignedBoothNumbers(request.getBooths())
-                .build();
-        User savedRecord=userRepository.save(user);
-
-        UserBoothAccess userBoothAccess=new UserBoothAccess();
-        List<BoothNumbers> booths=new ArrayList<>();
-
-        // 1️⃣ Fetch available booth numbers from DB
-        List<Long> existingBoothNumbers =
-                boothNumbersRepository.availableBooths  ();
-
-        if (existingBoothNumbers == null || existingBoothNumbers.isEmpty()) {
-            throw new RuntimeException("No booth numbers available in system");
-        }
-
-// 2️⃣ Get requested booths from request
-        List<Long> requestedBoothNumbers = request.getBooths();
-
-        if (requestedBoothNumbers == null || requestedBoothNumbers.isEmpty()) {
-            throw new RuntimeException("No booth numbers provided in request");
-        }
-
-
-// 4️⃣ Validate requested booths exist in DB
-        // 4️⃣ Save user-booth access
-//            for (Long bNum : requestedBoothNumbers) {
-//                UserBoothAccess userBoothAccesss = new UserBoothAccess();
-//                userBoothAccesss.setUser(user);
-//                userBoothAccesss.setBoothNumber(bNum);
-//                userBoothAccesss.setCreatedDate(LocalDateTime.now());
-//                userBoothAccesseRepository.save(userBoothAccesss);
-//            }
-        List<UserBoothAccess> boothAccessList = requestedBoothNumbers.stream()
-                .map(bNum -> UserBoothAccess.builder()
-                        .user(user)
-                        .boothNumber(bNum)
-                        .build()
-                )
-                .toList();
-
-        userBoothAccesseRepository.saveAll(boothAccessList);
-
-        return mapToUserResponse (savedRecord);
-    }
-
     @Override
     @Transactional
-    public UserResponse createUser(UserRequest request) {
+    public UserResponse createUser(UserRequest request,HttpServletRequest httprequest) {
+        String token = jwtUtil.getToken(httprequest);
+        if (token == null) {
+            throw new AccessDeniedException("Unauthorized: Token missing");
+        }
+        long userId = jwtUtil.getUserId(token);
+        User tokenuser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         // 1️⃣ Email validation
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
 
+        if(!tokenuser.isAdmin()){
+            throw new RuntimeException("You dont have access to create a volunteer");
+        }
         // 2️⃣ Create & save user
         User user = User.builder()
                 .username(request.getUsername())
@@ -123,6 +75,7 @@ public class UserServiceImpl implements UserService {
                 .phoneNumber(request.getPhoneNumber())
                 .email(request.getEmail())
                 .referredPerson(request.getReferredPerson())
+                .admin(false)
                 .build();
 
         User savedUser = userRepository.save(user);

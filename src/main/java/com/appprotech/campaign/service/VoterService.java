@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface VoterService {
 
-    public List<Voter> insertData(VoterBulkRequest originalDataRequest);
+    public List<Voter> insertData(VoterBulkRequest originalDataRequest,HttpServletRequest httprequest);
 
     List<VoterResponse> getAllVoters(HttpServletRequest request);
 

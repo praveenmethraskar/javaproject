@@ -49,8 +49,21 @@ public class VoterServiceImpl implements VoterService {
 
     @Override
     @Transactional
-    public List<Voter> insertData(VoterBulkRequest request) {
-
+    public List<Voter> insertData(VoterBulkRequest request,HttpServletRequest httprequest) {
+        String token = jwtUtil.getToken(httprequest);
+        if (token == null) {
+            throw new AccessDeniedException("Unauthorized: Token missing");
+        }
+        long userId = jwtUtil.getUserId(token);
+        User tokenuser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        // 1️⃣ Email validation
+        if (userRepository.existsByEmail(tokenuser.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+        if(!tokenuser.isAdmin()){
+            throw new RuntimeException("You dont have access to create a volunteer");
+        }
         CommonVoterData common = request.getCommon();
         List<OriginalDataRequest> records = request.getRecords();
 

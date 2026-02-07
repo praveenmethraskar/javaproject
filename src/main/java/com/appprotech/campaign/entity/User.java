@@ -41,7 +41,7 @@ public class User {
     @Column(name = "last_name", length = 50)
     private String lastName;
 
-    @Column(unique = true, nullable = false,name="phone_number")
+    @Column(unique = true, nullable = false, name = "phone_number")
     private Long phoneNumber;
 
     @Column(nullable = false)
@@ -67,6 +67,15 @@ public class User {
 
     @Column(name = "active_token")
     private String activeToken;
+
+
+    @Column(
+            name = "is_admin",
+            nullable = false,
+            columnDefinition = "TINYINT(1) DEFAULT 0"
+    )
+    private boolean admin;
+
 
 }
 

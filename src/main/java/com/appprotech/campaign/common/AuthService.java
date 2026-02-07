@@ -126,8 +126,10 @@ public class AuthService {
 
     @Transactional
     public OtpVerificationResponse verifyOtp(OtpVerificationequest otpVerificationequest) {
-       Optional<User>  user = userRepository.findByPhoneNumber(otpVerificationequest.getPhoneNumber());
-//                .orElseThrow(() -> new RuntimeException("Invalid userId"));
+        Optional<User> user = userRepository.findByPhoneNumber(otpVerificationequest.getPhoneNumber());
+        if (!user.isPresent()) {
+            throw new RuntimeException("number not registered");
+        }
 
         OtpVerification entity = otpRepository
                 .findTopByMobileAndVerifiedFalseOrderByIdDesc(user.get().getPhoneNumber())

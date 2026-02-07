@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface UserService {
 
-    UserResponse createUser(UserRequest request);
+    UserResponse createUser(UserRequest request,HttpServletRequest httprequest);
 
     UserResponse updateUser(HttpServletRequest request, UserRequest userRequest);
 
