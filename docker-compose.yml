@@ -24,7 +24,7 @@ services:
       retries: 5
 
   campaign-api:
-    image: java-app:latest     # THIS IS IMPORTANT
+    build: .                     # ✅ FIX
     container_name: campaign-api
     restart: always
 
