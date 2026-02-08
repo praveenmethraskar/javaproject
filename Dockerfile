@@ -1,20 +1,25 @@
-FROM eclipse-temurin:17-jdk
+# ---------- Build stage ----------
+FROM eclipse-temurin:17-jdk AS build
 
 WORKDIR /app
 
-# Copy full project
-COPY . .
-
-# Make mvnw executable
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
 RUN chmod +x mvnw
+RUN ./mvnw dependency:go-offline
 
-# Build WAR
+COPY src src
 RUN ./mvnw clean package -DskipTests
 
-# Copy WAR to a fixed name (NO wildcards at runtime)
-RUN cp target/*.war app.war
+
+# ---------- Runtime stage ----------
+FROM eclipse-temurin:17-jre
+
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
 
-# Run using fixed filename
-CMD ["java", "-jar", "app.war"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
