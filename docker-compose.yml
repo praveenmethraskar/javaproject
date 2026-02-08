@@ -10,6 +10,8 @@ services:
     environment:
       MYSQL_DATABASE: elecampaign
       MYSQL_ROOT_PASSWORD: RAVIkumar@9866
+      MYSQL_USER: campaign_user
+      MYSQL_PASSWORD: campaign@123
 
     ports:
       - "3306:3306"
@@ -24,7 +26,7 @@ services:
       retries: 5
 
   campaign-api:
-    build: .                     # ✅ FIX
+    image: java-app:latest
     container_name: campaign-api
     restart: always
 
@@ -38,7 +40,6 @@ services:
 
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_SHOW_SQL: "true"
-      SPRING_MAIN_LAZY_INITIALIZATION: "true"
       SERVER_PORT: 8080
 
     depends_on:
