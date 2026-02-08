@@ -17,7 +17,7 @@
     <groupId>com.appprotech</groupId>
     <artifactId>campaign</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <name>campaign</name>
     <description>Campaign Application</description>
@@ -35,7 +35,7 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- External Tomcat (WAR) -->
+        <!-- External Tomcat (JAR) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
